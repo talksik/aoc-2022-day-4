@@ -18,6 +18,18 @@ impl Pair {
 
         false
     }
+
+    fn is_any_overlap(&self) -> bool {
+        if self.second.0 >= self.first.0 && self.second.0 <= self.first.1 {
+            return true;
+        }
+
+        if self.first.0 >= self.second.0 && self.first.0 <= self.second.1 {
+            return true;
+        }
+
+        false
+    }
 }
 
 fn create_pairs_from_input() -> Vec<Pair> {
@@ -52,10 +64,25 @@ fn create_pairs_from_input() -> Vec<Pair> {
     pairs
 }
 
-fn get_total_overlapping(pairs: Vec<Pair>) -> u32 {
+// part 1
+// get total pairs where there is total overlap
+fn get_total_overlapping(pairs: &[Pair]) -> u32 {
     let mut total: u32 = 0;
-    for pair in pairs.into_iter() {
+    for pair in pairs.iter() {
         if pair.is_complete_overlap() {
+            total += 1;
+        }
+    }
+
+    total
+}
+
+// part 2
+// get the number of pairs that are overlapping at all
+fn get_total_any_overlap(pairs: &[Pair]) -> u32 {
+    let mut total: u32 = 0;
+    for pair in pairs.iter() {
+        if pair.is_any_overlap() {
             total += 1;
         }
     }
@@ -67,8 +94,11 @@ fn main() {
     println!("Hello, world!");
 
     let pairs = create_pairs_from_input();
-    let total = get_total_overlapping(pairs);
-    println!("total : {:}", total);
+    let total = get_total_overlapping(&pairs);
+    println!("total completely overlapping : {:}", total);
+
+    let total = get_total_any_overlap(&pairs);
+    println!("total any overlap : {:}", total);
 }
 
 #[cfg(test)]
@@ -78,7 +108,7 @@ mod tests {
     // part 1
     #[test]
     fn test_get_completely_overlapping_pairs() {
-        let pairs = vec![
+        let pairs: Vec<Pair> = vec![
             Pair {
                 first: Range(2, 4),
                 second: Range(6, 8),
@@ -104,7 +134,37 @@ mod tests {
                 second: Range(4, 8),
             },
         ];
+        assert_eq!(get_total_overlapping(&pairs), 2);
+    }
 
-        assert_eq!(get_total_overlapping(pairs), 2);
+    #[test]
+    fn test_get_any_overlap_total() {
+        let pairs: Vec<Pair> = vec![
+            Pair {
+                first: Range(2, 4),
+                second: Range(6, 8),
+            },
+            Pair {
+                first: Range(2, 3),
+                second: Range(4, 5),
+            },
+            Pair {
+                first: Range(5, 7),
+                second: Range(7, 9),
+            },
+            Pair {
+                first: Range(2, 8),
+                second: Range(3, 7),
+            },
+            Pair {
+                first: Range(6, 6),
+                second: Range(4, 6),
+            },
+            Pair {
+                first: Range(2, 6),
+                second: Range(4, 8),
+            },
+        ];
+        assert_eq!(get_total_any_overlap(&pairs), 4);
     }
 }
